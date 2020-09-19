@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html>
+<body>
+  
+<style>
+/*
+/
+/
+/ Code for the James' Autism task
+/
+/
+/
+/ 
+/
+/
+/ Last updated on: 08/09/2020
+/
+/
+/
+/
+
+/* BACKGROUND AND FONT COLOUR: */
+body {
+  background-color: black;
+  color: white;
+}
+
+/* DEFINE PROPERTIES OF THE HEADER TEXT: */
+h1{position: absolute;
+    left: 16cm;
+    top: 0cm;
+  }
+    
+/* DEFINE PROPERTIES OF INTRODUCTION TEXT 1: */
+t1{position: absolute;
+	top: 0.2cm;
+  padding: 100px;
+  }
+	
+/* DEFINE PROPERTIES OF INTRODUCTION TEXT 2: */
+t2{position: absolute;
+	top: 2.2cm;
+  padding: 100px;
+  }
+  
+ /* DEFINE PROPERTIES OF INTRODUCTION BUTTON: */
+.introbutton {position: absolute;
+	left: 18.3cm;
+	top: 19cm;
+	padding: 8px;
+  border-radius: 512px;}
+  
+/* PROPERTIES FOR CORRECT TEXTS: */
+b1_text1c{ position: absolute;
+    left: 18cm;
+    top: 10cm;
+	font-size: 1cm;
+  color: green;
+}
+
+/* PROPERTIES FOR INCORRECT TEXTS: */
+b1_text1i{ position: absolute;
+    left: 18cm;
+    top: 10cm;
+	font-size: 1cm;
+  color: red;
+}
+
+/* FIXATION CROSS: */
+fixation{ position: absolute;
+    left: 18.5cm;
+    top: 8.5cm;
+	font-size: 3cm;
+}
+
+div.fixed {
+  position: fixed;
+  top: 3cm;
+  left: 6cm;
+  font-size: 18px;
+}
+  
+</style>
+
+<!-- BLOCK 1 & 2 STIMULI -->
+<img id="stim1" src="https://i.ibb.co/1vXFTPM/SetZ3.png" onclick="b1n2_stimA_response_finder()" style="width:200px;height:200px;position:absolute;left:16cm;top:1cm;display:none">
+<img id="stim2" src="https://i.ibb.co/CBjg6Cm/SetZ4.png" onclick="b1n2_stimB_response_finder()" style="width:200px;height:200px;position:absolute;left:27cm;top:8cm;display:none">
+
+<!-- BLOCK 3 & 4 STIMULI - PLACE HOLDERS: -->
+<img id="b2_stim1" src="https://i.ibb.co/9v8rQQZ/f.jpg" onclick="b3n4_stimA_response_finder()" style="width:200px;height:200px;position:absolute;left:16cm;top:1cm;display:none"> <!-- Compound of stim1 -->
+<img id="b2_stim2" src="https://i.ibb.co/kMKrzN8/ff.jpg" onclick="b3n4_stimB_response_finder()" style="width:200px;height:200px;position:absolute;left:27cm;top:8cm;display:none"> <!-- Compound of stim2 -->
+
+<!-- BLOCK 5 & 6 STIMULI - PLACE HOLDERS: -->
+<img id="b3_stim1" src="https://i.ibb.co/R35Y39s/cl.jpg" onclick="b5n6_stimA_response_finder()" style="width:200px;height:200px;position:absolute;left:16cm;top:1cm;display:none"> <!-- Compound of stim1 -->
+<img id="b3_stim2" src="https://i.ibb.co/hmfYHFf/mo.jpg" onclick="b5n6_stimB_response_finder()" style="width:200px;height:200px;position:absolute;left:27cm;top:8cm;display:none"> <!-- Compound of stim2 -->
+
+<!-- BLOCK 5 & 6 STIMULI - PLACE HOLDERS: -->
+<img id="b4_stim1" src="https://i.ibb.co/SP4w51v/sk.jpg" onclick="b7n8_stimA_response_finder()" style="width:200px;height:200px;position:absolute;left:16cm;top:1cm;display:none"> <!-- Compound of stim1 -->
+<img id="b4_stim2" src="https://i.ibb.co/1vwqqqP/jk.jpg" onclick="b7n8_stimB_response_finder()" style="width:200px;height:200px;position:absolute;left:27cm;top:8cm;display:none"> <!-- Compound of stim2 -->
+
+<!-- INTRODUCTION PAGE TEXT AND HEADER: -->
+<h1 id="header" style="display:none">INSTRUCTION</h1> <!-- Define the header -->
+<div class="fixed">
+<pre id="introtext_1">
+On each trial you will be shown two patterns. On each trial one of the patterns is correct,
+and one of the patterns is wrong. Have a guess at which pattern is correct. If you have made
+the right choice the computer will show the word “Correct” in green. If you get it wrong the
+computer will show the word “Incorrect” in red. Keep choosing the pattern you think is correct.
+
+
+
+There is a rule you can follow to make the correct choice each time, but occasionally that
+rule will change and you have to be prepared for this, but the change will not happen very often.
+
+
+
+When you are ready to start, press the button below.
+
+</pre>
+</div>
+<t2 id="introtext_2" style="display:none"></t2> <!-- Define introduction text 2 -->
+
+<!-- BEGIN EXPERIMENT BUTTON: -->
+<button id="introbutton" style="display:none" class="introbutton" type="button" onclick="fix_cross()">Begin Experiment</button>
+
+<!-- EXPERIMENT TEXT: -->
+<b1_text1c id="block_1_correct_text" style="display:none">Correct</b1_text1c>
+<b1_text1i id="block_1_incorrect_text" style="display:none">Wrong</b1_text1i>
+<b1_text1 id="end_text" style="display:none">Finished!</b1_text1>
+
+
+<!-- FIXATION CROSS: -->
+<fixation id="fixation" style="display:none">+</fixation>
+
+
+<p id="bug"></p>
+
+<script>
+  
+// GENERAL HANDLES:
+var b1_correct_number = 6; // Number of correct responses needed in a row in block one to end block
+var b2_correct_number = 6; // Number of correct responses needed in a row in block two to end block
+var b3_correct_number = 6; // Number of correct responses needed in a row in block three to end block
+var b4_correct_number = 6; // Number of correct responses needed in a row in block four to end block
+var b5_correct_number = 6; // Number of correct responses needed in a row in block five to end block
+var b6_correct_number = 6; // Number of correct responses needed in a row in block six to end block
+var b7_correct_number = 6; // Number of correct responses needed in a row in block seven to end block
+var b8_correct_number = 6; // Number of correct responses needed in a row in block eight to end block
+var terminate = 50; // How many trials per block before you END IT ALL!
+
+// VARIABLES:
+var block_index = 0; // Define the variable that keeps track of the block we are on, initialise as 0
+var trial_tracker = 0; // Keep track of trial length
+var block_1n2_correct_stimuli; // Variable that determines the correct stimulus for block 1 & 2
+var block_3n4_correct_stimuli; // Variable that determines the correct stimulus for block 3 & 4
+var block_5n6_correct_stimuli; // Variable that determines the correct stimulus for block 5 & 6
+var block_7n8_correct_stimuli; // Variable that determines the correct stimulus for block 7 & 8
+var locate = [1,2,3,4]; // Determine 2 of 4 locations stimuli will appear in trial
+var stim_image_1 = [1,2]; // Determine the stimulus to show for image 1
+var stim_image_2 = [1,2]; // Determine the stimulus to show for image 2
+var end_now = 0; // Keep track of incorrect responses
+var quick_end = terminate + 1; // End the experiment after Ps do "terminate" number of trials without passing the block 
+var b1 = 0; // State we are looking at block 1
+var b2 = 0; // State we are looking at block 2
+var b3 = 0; // State we are looking at block 3
+var b4 = 0; // State we are looking at block 4
+var b5 = 0; // State we are looking at block 5
+var b6 = 0; // State we are looking at block 6
+var b7 = 0; // State we are looking at block 7
+var b8 = 0; // State we are looking at block 7
+
+// FUNCTION TO SHUFFLE:      
+function shuffle(condition) {
+  var currentIndex = condition.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = condition[currentIndex];
+    condition[currentIndex] = condition[randomIndex];
+    condition[randomIndex] = temporaryValue;
+  }
+  return condition;
+}
+
+// FIXATION CROSS FUNCTION:
+function fix_cross(){
+  document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('block_1_correct_text').style.display='none'; // Hide block 1 correct text
+  document.getElementById('block_1_incorrect_text').style.display='none'; // Show block 1 correct text
+  document.getElementById('fixation').style.display='block'; // Show fixation cross
+  document.getElementById('header').style.display='none'; // Remove header
+  document.getElementById('introtext_1').style.display='none'; // Remove introduction text 1
+  document.getElementById('introtext_2').style.display='none'; // Remove  introduction text 2
+  document.getElementById('introbutton').style.display='none'; // Remove begin experiment button
+  //document.getElementById("bug").innerHTML = end_now;
+  //////////////////////////////////////////
+  // Change block based on conditions: //
+  if(trial_tracker == b1_correct_number && b1 == 1){ // If there are 6 corect responses in a row move to block 2
+    b1 = 0; // Block 1 is off
+    b2 = 1; // Block 2 is on
+    trial_tracker = 0;
+    block_index = 2; // Index the start of block 2
+    end_now = 0; // Reset the incorrect trial recorder
+    setTimeout(block_selector, 1000); // Go back to block selector after 1 second
+  } else if (trial_tracker == b2_correct_number && b2 == 1) {
+    b2 = 0; // Block 2 is off
+    b3 = 1; // Block 3 is on
+    trial_tracker = 0;
+    block_index = 3; // Index the start of block 3
+    end_now = 0; // Reset the incorrect trial recorder
+    setTimeout(block_selector, 1000); // Go back to block selector after 1 second
+  } else if (trial_tracker == b3_correct_number && b3 == 1) {
+    b3 = 0; // Block 3 is off
+    b4 = 1; // Block 4 is on
+    trial_tracker = 0;
+    block_index = 4; // Index the start of block 4
+    end_now = 0; // Reset the incorrect trial recorder
+    setTimeout(block_selector, 1000); // Go back to block selector after 1 second
+  } else if (trial_tracker == b4_correct_number && b4 == 1) {
+    b4 = 0; // Block 4 is off
+    b5 = 1; // Block 5 is on
+    trial_tracker = 0;
+    block_index = 5; // Index the start of block 5
+    // Shuffle the correct response:
+    shuffle(block_1_correct);
+    end_now = 0; // Reset the incorrect trial recorder
+    setTimeout(block_selector, 1000); // Go back to block selector after 1 second
+  } else if (trial_tracker == b5_correct_number && b5 == 1) {
+    b5 = 0; // Block 5 is off
+    b6 = 1; // Block 6 is on
+    trial_tracker = 0;
+    block_index = 6; // Index the start of block 6
+    end_now = 0; // Reset the incorrect trial recorder
+    setTimeout(block_selector, 1000); // Go back to block selector after 1 second
+  } else if (trial_tracker == b6_correct_number && b6 == 1) {
+    b6 = 0; // Block 6 is off
+    b7 = 1; // Block 7 is on
+    trial_tracker = 0;
+    block_index = 7; // Index the start of block 6
+    // Shuffle the correct response:
+    shuffle(block_1_correct);
+    end_now = 0; // Reset the incorrect trial recorder
+    setTimeout(block_selector, 1000); // Go back to block selector after 1 second
+  }else if (trial_tracker == b7_correct_number && b7 == 1) {
+    b7 = 0; // Block 7 is off
+    b8 = 1; // Block 8 is on
+    trial_tracker = 0;
+    block_index = 8; // Index the start of block 6
+    // Shuffle the correct response:
+    shuffle(block_1_correct);
+    end_now = 0; // Reset the incorrect trial recorder
+    setTimeout(block_selector, 1000); // Go back to block selector after 1 second
+  } else if (trial_tracker == b8_correct_number && b8 == 1) {
+    setTimeout(end_experiment, 1000); // End experiment after 1 second
+  } else {
+    // Go and find what block we are now on:
+    setTimeout(block_selector, 1000); // Go back to block selector after 1 second
+  }
+  
+  
+  //////////////////////////////////////////
+  //////////////////////////////////////////
+  // Change block based on conditions: //
+  //if(b2_tracker == b2_correct_number){ // If there are 6 corect responses in a row move to block 2
+  //  b2_counter = 0; // Reset block response counter
+  //  block_index = 3; // Index the start of block 2
+  //  setTimeout(block_selector, 1000); // Go back to block selector after 1 second
+  //} else {
+  //  setTimeout(block_selector, 1000); // Go back to block selector after 1 second
+  //}
+  //////////////////////////////////////////
+}
+
+// END OF EXPERIMENT FUNCTION:
+function end_experiment(){
+  document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('fixation').style.display='none'; // Show fixation cross
+  document.getElementById('end_text').style.display='block'; // Show end of experiment text
+}
+
+// FIND CORRECT RESPONSE FOR BLOCK 1&2 STIM A:  
+function b1n2_stimA_response_finder(){
+  if (block_1n2_correct_stimuli == 1){
+   document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_correct_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 1+trial_tracker;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  } else {
+   document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_incorrect_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 0;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  }
+  // END THE EXPERIMENT IF P GETS 50 INCORRECT RESPONSES:
+  if (end_now == quick_end){
+  setTimeout(end_experiment, 1000); // End experiment after 1 second
+  }
+} 
+// FIND CORRECT RESPONSE FOR BLOCK 1&2 STIM B:   
+function b1n2_stimB_response_finder(){
+   if (block_1n2_correct_stimuli == 2){
+   document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_correct_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 1+trial_tracker;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  } else {
+   document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_incorrect_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 0;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  }
+  // END THE EXPERIMENT IF P GETS 50 INCORRECT RESPONSES:
+  if (end_now == quick_end){
+  setTimeout(end_experiment, 1000); // End experiment after 1 second
+  }
+}
+
+
+// FIND CORRECT RESPONSE FOR BLOCK 3&4 STIM A:  
+function b3n4_stimA_response_finder(){
+  if (block_3n4_correct_stimuli == 1) {
+   document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_correct_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 1+trial_tracker;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  } else {
+   document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_incorrect_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 0;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  }
+  // END THE EXPERIMENT IF P GETS 50 INCORRECT RESPONSES:
+  if (end_now == quick_end){
+  setTimeout(end_experiment, 1000); // End experiment after 1 second
+  }
+} 
+// FIND CORRECT RESPONSE FOR BLOCK 3&4 STIM B:   
+function b3n4_stimB_response_finder(){
+   if (block_3n4_correct_stimuli == 2) {
+   document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_correct_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 1+trial_tracker;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  } else {
+   document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_incorrect_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 0;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  }
+  // END THE EXPERIMENT IF P GETS 50 INCORRECT RESPONSES:
+  if (end_now == quick_end){
+  setTimeout(end_experiment, 1000); // End experiment after 1 second
+  }
+}
+
+
+
+// FIND CORRECT RESPONSE FOR BLOCK 5&6 STIM A:  
+function b5n6_stimA_response_finder(){
+  if (block_5n6_correct_stimuli == 1){
+   document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_correct_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 1+trial_tracker;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  } else {
+   document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_incorrect_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 0;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  }
+  // END THE EXPERIMENT IF P GETS 50 INCORRECT RESPONSES:
+  if (end_now == quick_end){
+  setTimeout(end_experiment, 1000); // End experiment after 1 second
+  }
+} 
+// FIND CORRECT RESPONSE FOR BLOCK 5&6 STIM B:   
+function b5n6_stimB_response_finder(){
+   if (block_5n6_correct_stimuli == 2){
+   document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_correct_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 1+trial_tracker;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  } else {
+   document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_incorrect_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 0;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  }
+  // END THE EXPERIMENT IF P GETS 50 INCORRECT RESPONSES:
+  if (end_now == quick_end){
+  setTimeout(end_experiment, 1000); // End experiment after 1 second
+  }
+}
+
+// FIND CORRECT RESPONSE FOR BLOCK 7&8 STIM A:  
+function b7n8_stimA_response_finder(){
+  if (block_7n8_correct_stimuli == 1){
+   document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_correct_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 1+trial_tracker;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  } else {
+   document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_incorrect_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 0;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  }
+  // END THE EXPERIMENT IF P GETS 50 INCORRECT RESPONSES:
+  if (end_now == quick_end){
+  setTimeout(end_experiment, 1000); // End experiment after 1 second
+  }
+} 
+// FIND CORRECT RESPONSE FOR BLOCK 7&8 STIM B:   
+function b7n8_stimB_response_finder(){
+   if (block_7n8_correct_stimuli == 2){
+   document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_correct_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 1+trial_tracker;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  } else {
+   document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+   document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+   document.getElementById('block_1_incorrect_text').style.display='block'; // Show block 1 correct text
+   trial_tracker= 0;
+   setTimeout(fix_cross, 1000); // Call fixation cross function after 1s
+  }
+  // END THE EXPERIMENT IF P GETS 50 INCORRECT RESPONSES:
+  if (end_now == quick_end){
+  setTimeout(end_experiment, 1000); // End experiment after 1 second
+  }
+}
+
+//////////////////////////////////////////
+// Determine the correct image randomly: //
+var block_1_correct = [1,2]; // Define stimuli to choose as correct
+shuffle(block_1_correct); // Shuffle the array to choose correct stimuli from
+block_1n2_correct_stimuli = block_1_correct[0]; // Determine what the correct stimuli
+//////////////////////////////////////////
+// BLOCK 1:
+function block_1() { // function that determines was happens in block 1
+  end_now = end_now+1; // Update tracker for incorrect responses
+  // LOCATION PICKER:
+  shuffle(locate); // Shuffle the possible location order
+  stim_1 = locate[0]; // Find stimulus 1 location
+  stim_2 = locate[1]; // Find stimulus 2 location
+  document.getElementById("bug").innerHTML = block_1n2_correct_stimuli;
+  // Determine stimulus 1 location:
+  if (stim_1 == 1){
+    document.getElementById('stim1').style.top="1cm"; // Show stimuli 1
+    document.getElementById('stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 2){
+    document.getElementById('stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('stim1').style.left="27cm"; // Show stimuli 1
+    document.getElementById('stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 3){
+    document.getElementById('stim1').style.top="15cm"; // Show stimuli 1
+    document.getElementById('stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 4){
+    document.getElementById('stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('stim1').style.left="5cm"; // Show stimuli 1
+    document.getElementById('stim1').style.display='block'; // Show stimuli 1
+  }
+  // Determine stimulus 2 location:
+  if (stim_2 == 1){
+    document.getElementById('stim2').style.top="1cm"; // Show stimuli 1
+    document.getElementById('stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 2){
+    document.getElementById('stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('stim2').style.left="27cm"; // Show stimuli 1
+    document.getElementById('stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 3){
+    document.getElementById('stim2').style.top="15cm"; // Show stimuli 1
+    document.getElementById('stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 4){
+    document.getElementById('stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('stim2').style.left="5cm"; // Show stimuli 1
+    document.getElementById('stim2').style.display='block'; // Show stimuli 1
+  }
+  // Stop showing stimuli if P does too many trials
+  if (end_now == quick_end){
+  document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('end_text').style.display='block'; // Show end of experiment text
+  }
+}
+// BLOCK 2:
+function block_2() { // function that determines was happens in block 2
+  // Reverse the correct response:
+  block_1n2_correct_stimuli = block_1_correct[1];
+  // LOCATION PICKER:
+  shuffle(locate); // Shuffle the possible location order
+  stim_1 = locate[0]; // Find stimulus 1 location
+  stim_2 = locate[1]; // Find stimulus 2 location
+  document.getElementById("bug").innerHTML = block_1n2_correct_stimuli;
+  // Determine stimulus 1 location:
+  if (stim_1 == 1){
+    document.getElementById('stim1').style.top="1cm"; // Show stimuli 1
+    document.getElementById('stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 2){
+    document.getElementById('stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('stim1').style.left="27cm"; // Show stimuli 1
+    document.getElementById('stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 3){
+    document.getElementById('stim1').style.top="15cm"; // Show stimuli 1
+    document.getElementById('stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 4){
+    document.getElementById('stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('stim1').style.left="5cm"; // Show stimuli 1
+    document.getElementById('stim1').style.display='block'; // Show stimuli 1
+  }
+  // Determine stimulus 2 location:
+  if (stim_2 == 1){
+    document.getElementById('stim2').style.top="1cm"; // Show stimuli 1
+    document.getElementById('stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 2){
+    document.getElementById('stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('stim2').style.left="27cm"; // Show stimuli 1
+    document.getElementById('stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 3){
+    document.getElementById('stim2').style.top="15cm"; // Show stimuli 1
+    document.getElementById('stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 4){
+    document.getElementById('stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('stim2').style.left="5cm"; // Show stimuli 1
+    document.getElementById('stim2').style.display='block'; // Show stimuli 1
+  }
+  // Stop showing stimuli if P does too many trials
+  if (end_now == quick_end){
+  document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('end_text').style.display='block'; // Show end of experiment text
+  }
+}
+// BLOCK 3:
+function block_3() { // function that determines was happens in block 3
+  // Reverse the correct response:
+  block_3n4_correct_stimuli = block_1_correct[1]; // The correct stimuli is the same as Block 2 except now it is compounded
+  // LOCATION PICKER:
+  shuffle(locate); // Shuffle the possible location order
+  stim_1 = locate[0]; // Find stimulus 1 location
+  stim_2 = locate[1]; // Find stimulus 2 location
+  // SHUFFLE WHICH STIMULUS TO SHOW:
+  shuffle(stim_image_1); // Shuffle which image to show for first stimulus
+  shuffle(stim_image_2); // Shuffle which image to show for second stimulus
+  // PICK THE EXACT STIMULUS IMAGE:
+  image_1 = stim_image_1[0]; // Pick stim 1 image
+  image_2 = stim_image_2[0]; // Pick stim 2 image
+  //Refine imagge picking:
+  if (image_1 == 1){
+    image_2 = 2; // Reverse image 2 selection
+  } else if (image_2 == 2){
+    image_2 = 1; // Reverse image 2 selection
+  }
+  // PICK FIRST IMAGE:
+  if (image_1 == 1){
+    document.getElementById("b2_stim1").src = "https://i.ibb.co/rcnvkB0/SetA11.png";
+  } else {
+    document.getElementById("b2_stim1").src = "https://i.ibb.co/ZT0cfGb/SetA21.png";
+  }
+  // PICK SECOND IMAGE:
+  if (image_2 == 1){
+    document.getElementById("b2_stim2").src = "https://i.ibb.co/g6NhywK/SetA12.png";
+  } else {
+    document.getElementById("b2_stim2").src = "https://i.ibb.co/vdYCYf4/SetA22.png";
+  } 
+  document.getElementById("bug").innerHTML = block_3n4_correct_stimuli;
+  // Determine stimulus 1 location:
+  if (stim_1 == 1){
+    document.getElementById('b2_stim1').style.top="1cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 2){
+    document.getElementById('b2_stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.left="27cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 3){
+    document.getElementById('b2_stim1').style.top="15cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 4){
+    document.getElementById('b2_stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.left="5cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.display='block'; // Show stimuli 1
+  }
+  // Determine stimulus 2 location:
+  if (stim_2 == 1){
+    document.getElementById('b2_stim2').style.top="1cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 2){
+    document.getElementById('b2_stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.left="27cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 3){
+    document.getElementById('b2_stim2').style.top="15cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 4){
+    document.getElementById('b2_stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.left="5cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.display='block'; // Show stimuli 1
+  }
+  // Stop showing stimuli if P does too many trials
+  if (end_now == quick_end){
+  document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('end_text').style.display='block'; // Show end of experiment text
+  }
+}
+// BLOCK 4:
+function block_4() { // function that determines was happens in block 4
+  // Reverse the correct response:
+  block_3n4_correct_stimuli = block_1_correct[0]; // The correct stimuli is the reverse of block 3
+  // LOCATION PICKER:
+  shuffle(locate); // Shuffle the possible location order
+  stim_1 = locate[0]; // Find stimulus 1 location
+  stim_2 = locate[1]; // Find stimulus 2 location
+  // SHUFFLE WHICH STIMULUS TO SHOW:
+  shuffle(stim_image_1); // Shuffle which image to show for first stimulus
+  shuffle(stim_image_2); // Shuffle which image to show for second stimulus
+  // PICK THE EXACT STIMULUS IMAGE:
+  image_1 = stim_image_1[0]; // Pick stim 1 image
+  image_2 = stim_image_2[0]; // Pick stim 2 image
+  //Refine imagge picking:
+  if (image_1 == 1){
+    image_2 = 2; // Reverse image 2 selection
+  } else if (image_2 == 2){
+    image_2 = 1; // Reverse image 2 selection
+  }
+  // PICK FIRST IMAGE:
+  if (image_1 == 1){
+    document.getElementById("b2_stim1").src = "https://i.ibb.co/rcnvkB0/SetA11.png";
+  } else {
+    document.getElementById("b2_stim1").src = "https://i.ibb.co/ZT0cfGb/SetA21.png";
+  }
+  // PICK SECOND IMAGE:
+  if (image_2 == 1){
+    document.getElementById("b2_stim2").src = "https://i.ibb.co/g6NhywK/SetA12.png";
+  } else {
+    document.getElementById("b2_stim2").src = "https://i.ibb.co/vdYCYf4/SetA22.png";
+  } 
+  document.getElementById("bug").innerHTML = block_3n4_correct_stimuli;
+  // Determine stimulus 1 location:
+  if (stim_1 == 1){
+    document.getElementById('b2_stim1').style.top="1cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 2){
+    document.getElementById('b2_stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.left="27cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 3){
+    document.getElementById('b2_stim1').style.top="15cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 4){
+    document.getElementById('b2_stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.left="5cm"; // Show stimuli 1
+    document.getElementById('b2_stim1').style.display='block'; // Show stimuli 1
+  }
+  // Determine stimulus 2 location:
+  if (stim_2 == 1){
+    document.getElementById('b2_stim2').style.top="1cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 2){
+    document.getElementById('b2_stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.left="27cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 3){
+    document.getElementById('b2_stim2').style.top="15cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 4){
+    document.getElementById('b2_stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.left="5cm"; // Show stimuli 1
+    document.getElementById('b2_stim2').style.display='block'; // Show stimuli 1
+  }
+  // Stop showing stimuli if P does too many trials
+  if (end_now == quick_end){
+  document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('end_text').style.display='block'; // Show end of experiment text
+  }
+}
+// BLOCK 5:
+function block_5() { // function that determines was happens in block 5
+  // Determine the correct response:
+  block_5n6_correct_stimuli = block_1_correct[0]; // The correct stimuli is randomly determined
+  // LOCATION PICKER:
+  shuffle(locate); // Shuffle the possible location order
+  stim_1 = locate[0]; // Find stimulus 1 location
+  stim_2 = locate[1]; // Find stimulus 2 location
+  // SHUFFLE WHICH STIMULUS TO SHOW:
+  shuffle(stim_image_1); // Shuffle which image to show for first stimulus
+  shuffle(stim_image_2); // Shuffle which image to show for second stimulus
+  // PICK THE EXACT STIMULUS IMAGE:
+  image_1 = stim_image_1[0]; // Pick stim 1 image
+  image_2 = stim_image_2[0]; // Pick stim 2 image
+  //Refine imagge picking:
+  if (image_1 == 1){
+    image_2 = 2; // Reverse image 2 selection
+  } else if (image_2 == 2){
+    image_2 = 1; // Reverse image 2 selection
+  }
+  // PICK FIRST IMAGE:
+  if (image_1 == 1){
+    document.getElementById("b3_stim1").src = "https://i.ibb.co/bmSJDHD/SetB11.png";
+  } else {
+    document.getElementById("b3_stim1").src = "https://i.ibb.co/R4wqxvN/SetB21.png";
+  }
+  // PICK SECOND IMAGE:
+  if (image_2 == 1){
+    document.getElementById("b3_stim2").src = "https://i.ibb.co/f8KX8PQ/SetB12.png";
+  } else {
+    document.getElementById("b3_stim2").src = "https://i.ibb.co/vX9bjjY/SetB22.png";
+  } 
+  document.getElementById("bug").innerHTML = block_5n6_correct_stimuli;
+  // Determine stimulus 1 location:
+  if (stim_1 == 1){
+    document.getElementById('b3_stim1').style.top="1cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 2){
+    document.getElementById('b3_stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.left="27cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 3){
+    document.getElementById('b3_stim1').style.top="15cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 4){
+    document.getElementById('b3_stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.left="5cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.display='block'; // Show stimuli 1
+  }
+  // Determine stimulus 2 location:
+  if (stim_2 == 1){
+    document.getElementById('b3_stim2').style.top="1cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 2){
+    document.getElementById('b3_stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.left="27cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 3){
+    document.getElementById('b3_stim2').style.top="15cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 4){
+    document.getElementById('b3_stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.left="5cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.display='block'; // Show stimuli 1
+  }
+  // Stop showing stimuli if P does too many trials
+  if (end_now == quick_end){
+  document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('end_text').style.display='block'; // Show end of experiment text
+  }
+}
+// BLOCK 6:
+function block_6() { // function that determines was happens in block 6
+  // Determine the correct response:
+  block_5n6_correct_stimuli = block_1_correct[1]; // The correct stimuli is the opposite of block 5
+  // LOCATION PICKER:
+  shuffle(locate); // Shuffle the possible location order
+  stim_1 = locate[0]; // Find stimulus 1 location
+  stim_2 = locate[1]; // Find stimulus 2 location
+  // SHUFFLE WHICH STIMULUS TO SHOW:
+  shuffle(stim_image_1); // Shuffle which image to show for first stimulus
+  shuffle(stim_image_2); // Shuffle which image to show for second stimulus
+  // PICK THE EXACT STIMULUS IMAGE:
+  image_1 = stim_image_1[0]; // Pick stim 1 image
+  image_2 = stim_image_2[0]; // Pick stim 2 image
+  //Refine imagge picking:
+  if (image_1 == 1){
+    image_2 = 2; // Reverse image 2 selection
+  } else if (image_2 == 2){
+    image_2 = 1; // Reverse image 2 selection
+  }
+  // PICK FIRST IMAGE:
+  if (image_1 == 1){
+    document.getElementById("b3_stim1").src = "https://i.ibb.co/bmSJDHD/SetB11.png";
+  } else {
+    document.getElementById("b3_stim1").src = "https://i.ibb.co/R4wqxvN/SetB21.png";
+  }
+  // PICK SECOND IMAGE:
+  if (image_2 == 1){
+    document.getElementById("b3_stim2").src = "https://i.ibb.co/f8KX8PQ/SetB12.png";
+  } else {
+    document.getElementById("b3_stim2").src = "https://i.ibb.co/vX9bjjY/SetB22.png";
+  } 
+  document.getElementById("bug").innerHTML = block_5n6_correct_stimuli;
+  // Determine stimulus 1 location:
+  if (stim_1 == 1){
+    document.getElementById('b3_stim1').style.top="1cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 2){
+    document.getElementById('b3_stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.left="27cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 3){
+    document.getElementById('b3_stim1').style.top="15cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 4){
+    document.getElementById('b3_stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.left="5cm"; // Show stimuli 1
+    document.getElementById('b3_stim1').style.display='block'; // Show stimuli 1
+  }
+  // Determine stimulus 2 location:
+  if (stim_2 == 1){
+    document.getElementById('b3_stim2').style.top="1cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 2){
+    document.getElementById('b3_stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.left="27cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 3){
+    document.getElementById('b3_stim2').style.top="15cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 4){
+    document.getElementById('b3_stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.left="5cm"; // Show stimuli 1
+    document.getElementById('b3_stim2').style.display='block'; // Show stimuli 1
+  }
+  // Stop showing stimuli if P does too many trials
+  if (end_now == quick_end){
+  document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('end_text').style.display='block'; // Show end of experiment text
+  }
+}
+// BLOCK 7:
+function block_7() { // function that determines was happens in block 7
+  // Determine the correct response:
+  block_7n8_correct_stimuli = block_1_correct[0]; // The correct stimuli is randomly selected
+  // LOCATION PICKER:
+  shuffle(locate); // Shuffle the possible location order
+  stim_1 = locate[0]; // Find stimulus 1 location
+  stim_2 = locate[1]; // Find stimulus 2 location
+  // SHUFFLE WHICH STIMULUS TO SHOW:
+  shuffle(stim_image_1); // Shuffle which image to show for first stimulus
+  shuffle(stim_image_2); // Shuffle which image to show for second stimulus
+  // PICK THE EXACT STIMULUS IMAGE:
+  image_1 = stim_image_1[0]; // Pick stim 1 image
+  image_2 = stim_image_2[0]; // Pick stim 2 image
+  //Refine imagge picking:
+  if (image_1 == 1){
+    image_2 = 2; // Reverse image 2 selection
+  } else if (image_2 == 2){
+    image_2 = 1; // Reverse image 2 selection
+  }
+  // PICK FIRST IMAGE:
+  if (image_1 == 1){
+    document.getElementById("b4_stim1").src = "https://i.ibb.co/rwGFSgY/SetC11.png";
+  } else {
+    document.getElementById("b4_stim1").src = "https://i.ibb.co/42SRF9f/SetC12.png";
+  }
+  // PICK SECOND IMAGE:
+  if (image_2 == 1){
+    document.getElementById("b4_stim2").src = "https://i.ibb.co/ynPsCRM/SetC21.png";
+  } else {
+    document.getElementById("b4_stim2").src = "https://i.ibb.co/fr9ywJn/SetC22.png";
+  } 
+  document.getElementById("bug").innerHTML = block_7n8_correct_stimuli;
+  // Determine stimulus 1 location:
+  if (stim_1 == 1){
+    document.getElementById('b4_stim1').style.top="1cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 2){
+    document.getElementById('b4_stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.left="27cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 3){
+    document.getElementById('b4_stim1').style.top="15cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 4){
+    document.getElementById('b4_stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.left="5cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.display='block'; // Show stimuli 1
+  }
+  // Determine stimulus 2 location:
+  if (stim_2 == 1){
+    document.getElementById('b4_stim2').style.top="1cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 2){
+    document.getElementById('b4_stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.left="27cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 3){
+    document.getElementById('b4_stim2').style.top="15cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 4){
+    document.getElementById('b4_stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.left="5cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.display='block'; // Show stimuli 1
+  }
+  // Stop showing stimuli if P does too many trials
+  if (end_now == quick_end){
+  document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('end_text').style.display='block'; // Show end of experiment text
+  }
+}
+// BLOCK 8:
+function block_8() { // function that determines was happens in block 8
+  // Determine the correct response:
+  block_7n8_correct_stimuli = block_1_correct[1]; // The correct stimuli is the opposite of block 7
+  // LOCATION PICKER:
+  shuffle(locate); // Shuffle the possible location order
+  stim_1 = locate[0]; // Find stimulus 1 location
+  stim_2 = locate[1]; // Find stimulus 2 location
+  // SHUFFLE WHICH STIMULUS TO SHOW:
+  shuffle(stim_image_1); // Shuffle which image to show for first stimulus
+  shuffle(stim_image_2); // Shuffle which image to show for second stimulus
+  // PICK THE EXACT STIMULUS IMAGE:
+  image_1 = stim_image_1[0]; // Pick stim 1 image
+  image_2 = stim_image_2[0]; // Pick stim 2 image
+  //Refine imagge picking:
+  if (image_1 == 1){
+    image_2 = 2; // Reverse image 2 selection
+  } else if (image_2 == 2){
+    image_2 = 1; // Reverse image 2 selection
+  }
+  // PICK FIRST IMAGE:
+  if (image_1 == 1){
+    document.getElementById("b4_stim1").src = "https://i.ibb.co/rwGFSgY/SetC11.png";
+  } else {
+    document.getElementById("b4_stim1").src = "https://i.ibb.co/42SRF9f/SetC12.png";
+  }
+  // PICK SECOND IMAGE:
+  if (image_2 == 1){
+    document.getElementById("b4_stim2").src = "https://i.ibb.co/ynPsCRM/SetC21.png";
+  } else {
+    document.getElementById("b4_stim2").src = "https://i.ibb.co/fr9ywJn/SetC22.png";
+  } 
+  document.getElementById("bug").innerHTML = block_7n8_correct_stimuli;
+  // Determine stimulus 1 location:
+  if (stim_1 == 1){
+    document.getElementById('b4_stim1').style.top="1cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 2){
+    document.getElementById('b4_stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.left="27cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 3){
+    document.getElementById('b4_stim1').style.top="15cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.display='block'; // Show stimuli 1
+  } else if (stim_1 == 4){
+    document.getElementById('b4_stim1').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.left="5cm"; // Show stimuli 1
+    document.getElementById('b4_stim1').style.display='block'; // Show stimuli 1
+  }
+  // Determine stimulus 2 location:
+  if (stim_2 == 1){
+    document.getElementById('b4_stim2').style.top="1cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 2){
+    document.getElementById('b4_stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.left="27cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 3){
+    document.getElementById('b4_stim2').style.top="15cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.left="16cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.display='block'; // Show stimuli 1
+  } else if (stim_2 == 4){
+    document.getElementById('b4_stim2').style.top="8cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.left="5cm"; // Show stimuli 1
+    document.getElementById('b4_stim2').style.display='block'; // Show stimuli 1
+  }
+  // Stop showing stimuli if P does too many trials
+  if (end_now == quick_end){
+  document.getElementById('b4_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b4_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b3_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b3_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('b2_stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('b2_stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('stim1').style.display='none'; // Hide stimuli 1
+  document.getElementById('stim2').style.display='none'; // Hide stimuli 2
+  document.getElementById('end_text').style.display='block'; // Show end of experiment text
+  }
+}
+
+// DETERMINE WHAT BLOCK TO SHOW:
+function block_selector() {
+  if(block_index == 1){ // Begin block 1
+    document.getElementById('header').style.display='none'; // Remove header
+    document.getElementById('introtext_1').style.display='none'; // Remove introduction text 1
+    document.getElementById('introtext_2').style.display='none'; // Remove  introduction text 2
+    document.getElementById('introbutton').style.display='none'; // Remove begin experiment button
+    document.getElementById('stim1').style.display='none'; // Remove stimuli 1
+    document.getElementById('stim2').style.display='none'; // Remove stimuli 2
+    document.getElementById('block_1_correct_text').style.display='none'; // Hide block 1 correct text
+    document.getElementById('block_1_incorrect_text').style.display='none'; // Show block 1 correct text
+    document.getElementById('fixation').style.display='none'; // Hide fixation cross
+    b1 = 1; // Block 1 is on
+    block_1(); // Call the block 1 function
+  } else if (block_index == 2){ // Begin block 2
+    document.getElementById('header').style.display='none'; // Remove header
+    document.getElementById('introtext_1').style.display='none'; // Remove introduction text 1
+    document.getElementById('introtext_2').style.display='none'; // Remove  introduction text 2
+    document.getElementById('introbutton').style.display='none'; // Remove begin experiment button
+    document.getElementById('stim1').style.display='none'; // Remove stimuli 1
+    document.getElementById('stim2').style.display='none'; // Remove stimuli 2
+    document.getElementById('block_1_correct_text').style.display='none'; // Hide block 1 correct text
+    document.getElementById('block_1_incorrect_text').style.display='none'; // Show block 1 correct text
+    document.getElementById('fixation').style.display='none'; // Hide fixation cross
+    b2 = 1; // Block 2 is on
+    block_2(); // Call the block 2 function
+  } else if (block_index == 3){ // Begin block 3
+    document.getElementById('header').style.display='none'; // Remove header
+    document.getElementById('introtext_1').style.display='none'; // Remove introduction text 1
+    document.getElementById('introtext_2').style.display='none'; // Remove  introduction text 2
+    document.getElementById('introbutton').style.display='none'; // Remove begin experiment button
+    document.getElementById('stim1').style.display='none'; // Remove stimuli 1
+    document.getElementById('stim2').style.display='none'; // Remove stimuli 2
+    document.getElementById('block_1_correct_text').style.display='none'; // Hide block 1 correct text
+    document.getElementById('block_1_incorrect_text').style.display='none'; // Show block 1 correct text
+    document.getElementById('fixation').style.display='none'; // Hide fixation cross
+    b3 = 1; // Block 3 is on 
+    block_3(); // Call the block 3 function
+  } else if (block_index == 4){ // Begin block 4
+    document.getElementById('header').style.display='none'; // Remove header
+    document.getElementById('introtext_1').style.display='none'; // Remove introduction text 1
+    document.getElementById('introtext_2').style.display='none'; // Remove  introduction text 2
+    document.getElementById('introbutton').style.display='none'; // Remove begin experiment button
+    document.getElementById('stim1').style.display='none'; // Remove stimuli 1
+    document.getElementById('stim2').style.display='none'; // Remove stimuli 2
+    document.getElementById('block_1_correct_text').style.display='none'; // Hide block 1 correct text
+    document.getElementById('block_1_incorrect_text').style.display='none'; // Show block 1 correct text
+    document.getElementById('fixation').style.display='none'; // Hide fixation cross
+    b4 = 1; // Block 4 is on
+    block_4(); // Call the block 4 function
+  } else if (block_index == 5){ // Begin block 5
+    document.getElementById('header').style.display='none'; // Remove header
+    document.getElementById('introtext_1').style.display='none'; // Remove introduction text 1
+    document.getElementById('introtext_2').style.display='none'; // Remove  introduction text 2
+    document.getElementById('introbutton').style.display='none'; // Remove begin experiment button
+    document.getElementById('stim1').style.display='none'; // Remove stimuli 1
+    document.getElementById('stim2').style.display='none'; // Remove stimuli 2
+    document.getElementById('block_1_correct_text').style.display='none'; // Hide block 1 correct text
+    document.getElementById('block_1_incorrect_text').style.display='none'; // Show block 1 correct text
+    document.getElementById('fixation').style.display='none'; // Hide fixation cross
+    b5 = 1; // Block 5 is on
+    block_5(); // Call the block 5 function
+  } else if (block_index == 6){ // Begin block 6
+    document.getElementById('header').style.display='none'; // Remove header
+    document.getElementById('introtext_1').style.display='none'; // Remove introduction text 1
+    document.getElementById('introtext_2').style.display='none'; // Remove  introduction text 2
+    document.getElementById('introbutton').style.display='none'; // Remove begin experiment button
+    document.getElementById('stim1').style.display='none'; // Remove stimuli 1
+    document.getElementById('stim2').style.display='none'; // Remove stimuli 2
+    document.getElementById('block_1_correct_text').style.display='none'; // Hide block 1 correct text
+    document.getElementById('block_1_incorrect_text').style.display='none'; // Show block 1 correct text
+    document.getElementById('fixation').style.display='none'; // Hide fixation cross
+    b6 = 1; // Block 5 is on
+    block_6(); // Call the block 6 function
+  } else if (block_index == 7){ // Begin block 7
+    document.getElementById('header').style.display='none'; // Remove header
+    document.getElementById('introtext_1').style.display='none'; // Remove introduction text 1
+    document.getElementById('introtext_2').style.display='none'; // Remove  introduction text 2
+    document.getElementById('introbutton').style.display='none'; // Remove begin experiment button
+    document.getElementById('stim1').style.display='none'; // Remove stimuli 1
+    document.getElementById('stim2').style.display='none'; // Remove stimuli 2
+    document.getElementById('block_1_correct_text').style.display='none'; // Hide block 1 correct text
+    document.getElementById('block_1_incorrect_text').style.display='none'; // Show block 1 correct text
+    document.getElementById('fixation').style.display='none'; // Hide fixation cross
+    b7 = 1; // Block 5 is on
+    block_7(); // Call the block 7 function
+  } else if (block_index == 8){ // Begin block 8
+    document.getElementById('header').style.display='none'; // Remove header
+    document.getElementById('introtext_1').style.display='none'; // Remove introduction text 1
+    document.getElementById('introtext_2').style.display='none'; // Remove  introduction text 2
+    document.getElementById('introbutton').style.display='none'; // Remove begin experiment button
+    document.getElementById('stim1').style.display='none'; // Remove stimuli 1
+    document.getElementById('stim2').style.display='none'; // Remove stimuli 2
+    document.getElementById('block_1_correct_text').style.display='none'; // Hide block 1 correct text
+    document.getElementById('block_1_incorrect_text').style.display='none'; // Show block 1 correct text
+    document.getElementById('fixation').style.display='none'; // Hide fixation cross
+    b8 = 1; // Block 8 is on
+    block_8(); // Call the block 8 function
+  } else if (block_index == 9){ // Begin block 9
+    document.getElementById('header').style.display='none'; // Remove header
+    document.getElementById('introtext_1').style.display='none'; // Remove introduction text 1
+    document.getElementById('introtext_2').style.display='none'; // Remove  introduction text 2
+    document.getElementById('introbutton').style.display='none'; // Remove begin experiment button
+    document.getElementById('stim1').style.display='none'; // Remove stimuli 1
+    document.getElementById('stim2').style.display='none'; // Remove stimuli 2
+    document.getElementById('block_1_correct_text').style.display='none'; // Hide block 1 correct text
+    document.getElementById('block_1_incorrect_text').style.display='none'; // Show block 1 correct text
+    document.getElementById('fixation').style.display='none'; // Hide fixation cross
+    end_experiment(); // Call the block 8 function
+  }
+}
+
+// INTRODUCTION PAGE WITH TEXT:
+document.getElementById('header').style.display='block'; // Show header
+document.getElementById('introtext_1').style.display='block'; // Show introduction text 1
+document.getElementById('introtext_2').style.display='block'; // Show  introduction text 2
+block_index = 1; // Define the next block to be shown as block 1
+document.getElementById('introbutton').style.display='block'; // Show the begin experiment button
+
+</script>
+
+
+</body>
+</html>
